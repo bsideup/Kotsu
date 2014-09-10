@@ -36,7 +36,7 @@ deploy:
         content: $WERKER_PRIVATE
         overwrite: true
         hide-from-log: true
-    - anka-sirota/rsync-deploy@0.1.12
+    - anka-sirota/rsync-deploy:
         host: $HOSTNAME
         user: $USERNAME
         sshkey: $PRIVATEKEY_FILE
