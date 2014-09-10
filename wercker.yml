@@ -22,3 +22,23 @@ build:
         channel: general
         username: wercker
         icon_url: https://avatars3.githubusercontent.com/u/1695193?s=140
+
+deploy:
+  steps:
+    - add-to-known_hosts:
+        hostname: $HOSTNAME
+        fingerprint: $FINGERPRINT
+    - mktemp:
+        envvar: PRIVATEKEY_FILE
+    - create-file:
+        name: write key
+        filename: $PRIVATEKEY_FILE
+        content: $WERKER_PRIVATE
+        overwrite: true
+        hide-from-log: true
+    - anka-sirota/rsync-deploy@0.1.12
+        host: $HOSTNAME
+        user: $USERNAME
+        sshkey: $PRIVATEKEY_FILE
+        directory: $PATH
+        source: ./build/
