@@ -22,7 +22,7 @@ build:
         code: sudo docker build -t $DOCKER_IMAGE_NAME:$WERCKER_GIT_COMMIT .
     - script:
         name: login to docker hub
-        code: sudo docker login -u $DOCKER_USER -p $DOCKER_PASSWORD
+        code: sudo docker login -u $DOCKER_USER -p $DOCKER_PASSWORD -e $DOCKER_EMAIL
     - script:
         name: push image
         code: sudo docker push $DOCKER_IMAGE_NAME:$WERCKER_GIT_COMMIT
@@ -66,7 +66,7 @@ deploy:
         code: scp $SERVICE_PATH core@$DEPLOY_SERVER:/home/core/app.service
     - script:
         name: login to docker hub
-        code: ssh core@$DEPLOY_SERVER docker login -u $DOCKER_USER -p $DOCKER_PASSWORD
+        code: ssh core@$DEPLOY_SERVER docker login -u $DOCKER_USER -p $DOCKER_PASSWORD -e $DOCKER_EMAIL
     - script:
         name: link service file
         code: ssh core@$DEPLOY_SERVER sudo mv /home/core/app.service /etc/systemd/system/app.service
