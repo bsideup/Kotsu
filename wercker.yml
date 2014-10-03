@@ -58,7 +58,7 @@ deploy:
           ExecStartPre=-/usr/bin/docker kill app
           ExecStartPre=-/usr/bin/docker rm app
           ExecStartPre=/usr/bin/docker pull $DOCKER_IMAGE_NAME:$WERCKER_GIT_COMMIT
-          ExecStart=/usr/bin/docker run --name app -p 80:80 $DOCKER_IMAGE_NAME:$WERCKER_GIT_COMMIT
+          ExecStart=/usr/bin/docker run --name app -p 80:80 --restart="always" $DOCKER_IMAGE_NAME:$WERCKER_GIT_COMMIT
           [Install]
           WantedBy=multi-user.target
     - script:
