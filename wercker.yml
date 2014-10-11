@@ -52,14 +52,9 @@ deploy:
           After=docker.service
           Requires=docker.service
           [Service]
-          Restart=always
-          User=core
-          TimeoutStartSec=0
-          EnvironmentFile=-/etc/app.conf
           ExecStartPre=-/usr/bin/docker kill app
           ExecStartPre=-/usr/bin/docker rm app
-          ExecStartPre=/usr/bin/docker pull $DOCKER_IMAGE_NAME:$WERCKER_GIT_COMMIT
-          ExecStart=/usr/bin/docker run --name app -p 80:80 --restart="always" $DOCKER_IMAGE_NAME:$WERCKER_GIT_COMMIT
+          ExecStart=/usr/bin/docker run --name app -p 80:80 $DOCKER_IMAGE_NAME:$WERCKER_GIT_COMMIT
           [Install]
           WantedBy=multi-user.target
     - script:
@@ -69,11 +64,11 @@ deploy:
         name: login to docker hub
         code: ssh core@$DEPLOY_SERVER docker login -u $DOCKER_USER -p $DOCKER_PASSWORD -e $DOCKER_EMAIL
     - script:
+        name: download image
+        code: ssh core@$DEPLOY_SERVER docker pull $DOCKER_IMAGE_NAME:$WERCKER_GIT_COMMIT
+    - script:
         name: link service file
         code: ssh core@$DEPLOY_SERVER sudo mv /home/core/app.service /etc/systemd/system/app.service
-    - script:
-        name: chmod service file
-        code: ssh core@$DEPLOY_SERVER sudo chmod +x /etc/systemd/system/app.service
     - script:
         name: reload systemd
         code: ssh core@$DEPLOY_SERVER sudo systemctl daemon-reload
