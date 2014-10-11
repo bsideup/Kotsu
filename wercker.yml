@@ -52,6 +52,8 @@ deploy:
           After=docker.service
           Requires=docker.service
           [Service]
+          Restart=always
+          TimeoutStartSec=5s
           ExecStartPre=-/usr/bin/docker kill app
           ExecStartPre=-/usr/bin/docker rm app
           ExecStart=/usr/bin/docker run --name app -p 80:80 $DOCKER_IMAGE_NAME:$WERCKER_GIT_COMMIT
