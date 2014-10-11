@@ -52,6 +52,7 @@ deploy:
           After=docker.service
           Requires=docker.service
           [Service]
+          Restart=always
           User=core
           TimeoutStartSec=0
           EnvironmentFile=-/etc/app.conf
@@ -70,6 +71,9 @@ deploy:
     - script:
         name: link service file
         code: ssh core@$DEPLOY_SERVER sudo mv /home/core/app.service /etc/systemd/system/app.service
+    - script:
+        name: chmod service file
+        code: ssh core@$DEPLOY_SERVER sudo chmod +x /etc/systemd/system/app.service
     - script:
         name: reload systemd
         code: ssh core@$DEPLOY_SERVER sudo systemctl daemon-reload
