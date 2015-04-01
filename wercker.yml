@@ -21,17 +21,9 @@ build:
           sudo apt-get install graphicsmagick -y
     - npm-test
     - script:
-        name: update docker
-        code: curl -sSL https://get.docker.io/ubuntu/ | sudo sh
-    - script:
-        name: build image
-        code: sudo docker build -t $DOCKER_IMAGE_NAME:$WERCKER_GIT_COMMIT .
-    - script:
-        name: login to docker hub
-        code: sudo docker login -u $DOCKER_USER -p $DOCKER_PASSWORD -e $DOCKER_EMAIL
-    - script:
-        name: push image
-        code: sudo docker push $DOCKER_IMAGE_NAME:$WERCKER_GIT_COMMIT
+        name: pack app
+        code: |
+          tar -zcvf app.tar.gz Dockerfile build/
 
   after-steps:
     - lotustm/ultimate-slack-notify:
@@ -45,47 +37,15 @@ deploy:
         keyname: SERVER_KEY
     - add-to-known_hosts:
         hostname: $DEPLOY_SERVER
-    - mktemp:
-        name: temp service file
-        envvar: SERVICE_PATH
-    - create-file:
-        name: service file
-        filename: $SERVICE_PATH
-        overwrite: true
-        content: |
-          [Unit]
-          Description=Nginx based application
-          After=docker.service
-          Requires=docker.service
-          [Service]
-          Restart=always
-          TimeoutStartSec=5s
-          ExecStartPre=-/usr/bin/docker kill $WERCKER_APPLICATION_NAME
-          ExecStartPre=-/usr/bin/docker rm $WERCKER_APPLICATION_NAME
-          ExecStart=/usr/bin/docker run --name $WERCKER_APPLICATION_NAME -p 80:80 $DOCKER_IMAGE_NAME:$WERCKER_GIT_COMMIT
-          [Install]
-          WantedBy=multi-user.target
     - script:
-        name: copy service file
-        code: scp $SERVICE_PATH core@$DEPLOY_SERVER:/home/core/$WERCKER_APPLICATION_NAME.service
+        name: copy app archive
+        code: scp app.tar.gz core@$DEPLOY_SERVER:~/$WERCKER_APPLICATION_NAME.tar.gz
     - script:
-        name: login to docker hub
-        code: ssh core@$DEPLOY_SERVER docker login -u $DOCKER_USER -p $DOCKER_PASSWORD -e $DOCKER_EMAIL
+        name: copy deploy script
+        code: scp deploy.sh core@$DEPLOY_SERVER:~/deploy.sh
     - script:
-        name: download image
-        code: ssh core@$DEPLOY_SERVER docker pull $DOCKER_IMAGE_NAME:$WERCKER_GIT_COMMIT
-    - script:
-        name: link service file
-        code: ssh core@$DEPLOY_SERVER sudo mv /home/core/$WERCKER_APPLICATION_NAME.service /etc/systemd/system/$WERCKER_APPLICATION_NAME.service
-    - script:
-        name: reload systemd
-        code: ssh core@$DEPLOY_SERVER sudo systemctl daemon-reload
-    - script:
-        name: enable service
-        code: ssh core@$DEPLOY_SERVER sudo systemctl enable $WERCKER_APPLICATION_NAME.service
-    - script:
-        name: restart service
-        code: ssh core@$DEPLOY_SERVER sudo systemctl restart $WERCKER_APPLICATION_NAME.service
+        name: deploy app
+        code: ssh core@$DEPLOY_SERVER ./deploy.sh $WERCKER_APPLICATION_NAME $WERCKER_GIT_COMMIT
 
   after-steps:
     - lotustm/ultimate-slack-notify:
