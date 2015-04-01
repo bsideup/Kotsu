@@ -8,11 +8,8 @@ build:
           echo "npm version $(npm -v) running"
     - npm-install
     - script:
-        name: install grunt-cli
-        code: sudo npm install -g grunt-cli
-    - script:
-        name: install sass
-        code: sudo gem install sass --no-ri --no-rdoc
+        name: install dependencies
+        code: sudo npm install -g grunt-cli & sudo gem install sass --no-ri --no-rdoc & wait
     - npm-test
     - script:
         name: pack app
