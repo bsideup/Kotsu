@@ -10,9 +10,9 @@ build:
     - script:
         name: install grunt-cli
         code: sudo npm install -g grunt-cli
-#    - script:
-#        name: install sass
-#        code: sudo gem install sass --no-ri --no-rdoc
+    - script:
+        name: install sass
+        code: sudo gem install sass --no-ri --no-rdoc
     - npm-test
     - script:
         name: pack app
