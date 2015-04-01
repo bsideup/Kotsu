@@ -16,8 +16,6 @@ build:
     - script:
         name: install graphicsmagick
         code: |
-          sudo add-apt-repository ppa:dhor/myway -y
-          sudo apt-get update -qq
           sudo apt-get install graphicsmagick -y
     - npm-test
     - script:
