@@ -2,11 +2,12 @@ box: wercker/nodejs
 build:
   steps:
     - script:
-        name: echo nodejs information
+        name: install npm dependencies
         code: |
-          echo "node version $(node -v) running"
-          echo "npm version $(npm -v) running"
-    - npm-install
+          mkdir -p $WERCKER_CACHE_DIR/wercker/npm
+          npm config set cache $WERCKER_CACHE_DIR/wercker/npm
+          sudo npm install --save-dev
+#    - npm-install
     - script:
         name: install dependencies
         code: sudo npm install -g grunt-cli & sudo gem install sass --no-ri --no-rdoc & wait
