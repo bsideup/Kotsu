@@ -7,16 +7,6 @@ build:
           echo "node version $(node -v) running"
           echo "npm version $(npm -v) running"
     - npm-install
-    - script:
-        name: install grunt-cli
-        code: sudo npm install -g grunt-cli
-    - script:
-        name: install sass
-        code: sudo gem install sass --no-ri --no-rdoc
-    - script:
-        name: install graphicsmagick
-        code: |
-          sudo apt-get install graphicsmagick -y
     - npm-test
     - script:
         name: pack app
